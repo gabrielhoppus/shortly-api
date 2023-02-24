@@ -31,7 +31,7 @@ export async function getURL(req, res) {
         const url = await db.query("SELECT * FROM urls WHERE id = $1;", [id])
 
         if (url.rowCount) {
-            res.status(200).json({id: url.rows[0].id, url: url.rows[0].url, short_url: url.rows[0].short_url})
+            res.status(200).json({ id: url.rows[0].id, url: url.rows[0].url, short_url: url.rows[0].short_url })
         } else {
             return res.status(404).send("Url não encontrada");
         }
@@ -41,7 +41,24 @@ export async function getURL(req, res) {
 }
 
 export async function openURL(req, res) {
-    return;
+    const { shortUrl  } = req.params;
+
+    try {
+        const target = await db.query(`SELECT * FROM urls WHERE short_url = $1;`, [shortUrl])
+
+        if (!target.rowCount){
+            return res.status(404).send("Url não encontrada");
+        }
+
+        res.redirect(target.rows[0].url)
+
+        const visits = target.rows[0].visits + 1;
+
+        await db.query("UPDATE urls SET visits = $1 WHERE short_url = $2", [visits, shortUrl]);
+
+    } catch (error) {
+        return res.status(500).send(error);
+    }
 }
 
 export async function deleteURL(req, res) {
