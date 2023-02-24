@@ -5,7 +5,7 @@
 -- Dumped from database version 15.1
 -- Dumped by pg_dump version 15.1
 
--- Started on 2023-02-22 20:08:30
+-- Started on 2023-02-24 19:06:31
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -63,7 +63,7 @@ ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
 
 
 --
--- TOC entry 219 (class 1259 OID 24650)
+-- TOC entry 219 (class 1259 OID 24671)
 -- Name: urls; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -72,6 +72,7 @@ CREATE TABLE public.urls (
     user_id integer,
     url character varying(255),
     short_url character varying(8),
+    visits integer,
     created_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
@@ -79,7 +80,7 @@ CREATE TABLE public.urls (
 ALTER TABLE public.urls OWNER TO postgres;
 
 --
--- TOC entry 218 (class 1259 OID 24649)
+-- TOC entry 218 (class 1259 OID 24670)
 -- Name: urls_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -153,7 +154,7 @@ ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.ses
 
 
 --
--- TOC entry 3187 (class 2604 OID 24653)
+-- TOC entry 3187 (class 2604 OID 24674)
 -- Name: urls id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -174,14 +175,19 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.sessions (id, user_id, token, created_at) FROM stdin;
+1	1	961de0d8-9ee2-4dcd-b53a-86e719b39003	2023-02-24 18:27:49.297674
+\.
 
 
 --
--- TOC entry 3346 (class 0 OID 24650)
+-- TOC entry 3346 (class 0 OID 24671)
 -- Dependencies: 219
 -- Data for Name: urls; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.urls (id, user_id, url, short_url, visits, created_at) FROM stdin;
+\.
 
 
 --
@@ -190,6 +196,9 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.users (id, name, email, password, created_at) FROM stdin;
+1	João	joao@driven.com.br	$2b$10$U2RaWTXWTeyTreJj85HRB.P06WLkwd430QJcefV8icFksd8Pw3sEy	2023-02-24 18:24:52.321637
+\.
 
 
 --
@@ -198,7 +207,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sessions_id_seq', 1, false);
+SELECT pg_catalog.setval('public.sessions_id_seq', 1, true);
 
 
 --
@@ -216,7 +225,7 @@ SELECT pg_catalog.setval('public.urls_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, false);
+SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 
 --
@@ -229,7 +238,7 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- TOC entry 3196 (class 2606 OID 24656)
+-- TOC entry 3196 (class 2606 OID 24677)
 -- Name: urls urls_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -265,7 +274,7 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- TOC entry 3198 (class 2606 OID 24657)
+-- TOC entry 3198 (class 2606 OID 24678)
 -- Name: urls urls_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -273,7 +282,7 @@ ALTER TABLE ONLY public.urls
     ADD CONSTRAINT urls_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
--- Completed on 2023-02-22 20:08:30
+-- Completed on 2023-02-24 19:06:31
 
 --
 -- PostgreSQL database dump complete
