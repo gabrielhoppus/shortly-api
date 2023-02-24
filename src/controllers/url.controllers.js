@@ -62,5 +62,26 @@ export async function openURL(req, res) {
 }
 
 export async function deleteURL(req, res) {
-    return;
+    const { id } = req.params;
+    const session = res.locals.session
+    const userId = session.rows[0].user_id;
+
+    try{
+
+        const auth = await db.query("SELECT * FROM urls WHERE id = $1;", [id])
+
+        if (auth.rows[0].user_id !== userId){
+            return res.status(401).send("Você não tem autorização para essa ação")
+        }
+
+        if (!auth.rowCount){
+            return res.status(404).send("URL não encontrada")
+        }
+
+        await db.query("DELETE FROM urls WHERE id = $1;", [id])
+
+        res.sendStatus(204)
+    }catch{
+        return res.status(500).send(error);
+    }
 }
