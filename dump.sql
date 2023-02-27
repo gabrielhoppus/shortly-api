@@ -68,7 +68,7 @@ CREATE TABLE public.urls (
     user_id integer,
     url character varying(255),
     short_url character varying(8),
-    visits integer,
+    visits integer DEFAULT 0,
     created_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
