@@ -14,13 +14,13 @@ export async function getUser(_, res) {
             short_url AS "shortUrl",
             url,
             visits as "visitCount"
-            FROM urls WHERE user_id = $1 AND visits <> NULL`,
+            FROM urls WHERE user_id = $1`,
                 [userId]
         )
 
         const info = await db.query(`
             SELECT id, name,
-            (SELECT SUM(visits) FROM urls WHERE user_id = $1 AND visits <> NULL) as visitCount
+            (SELECT SUM(visits) FROM urls WHERE user_id = $1) as visitCount
             FROM users
             WHERE id = $1;
         `, [userId])
@@ -29,7 +29,7 @@ export async function getUser(_, res) {
         const ObjectResponse = {
             id: info.rows[0].id,
 			name: info.rows[0].name,
-			visitCount: info.rows[0].visitcount,
+			visitCount: info.rows[0].visitcount !== null ? info.rows[0].visitcount : 0,
 			shortenedUrls: urls.rows,
         }
         return res.status(200).send(ObjectResponse);
