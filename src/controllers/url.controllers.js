@@ -31,7 +31,7 @@ export async function getURL(req, res) {
         const url = await db.query("SELECT * FROM urls WHERE id = $1;", [id])
 
         if (url.rowCount) {
-            res.status(200).json({ id: url.rows[0].id, url: url.rows[0].url, short_url: url.rows[0].short_url })
+            res.status(200).json({ id: url.rows[0].id, url: url.rows[0].url, shortUrl : url.rows[0].short_url })
         } else {
             return res.status(404).send("Url não encontrada");
         }
