@@ -70,12 +70,12 @@ export async function deleteURL(req, res) {
 
         const auth = await db.query("SELECT * FROM urls WHERE id = $1;", [id])
 
-        if (auth.rows[0].user_id !== userId){
-            return res.status(401).send("Você não tem autorização para essa ação")
-        }
-
         if (!auth.rowCount){
             return res.status(404).send("URL não encontrada")
+        } 
+
+        if (auth.rows[0].user_id !== userId){
+            return res.status(401).send("Você não tem autorização para essa ação")
         }
 
         await db.query("DELETE FROM urls WHERE id = $1;", [id])
