@@ -33,9 +33,10 @@ export async function loginUser(req, res) {
     password = stripHtml(password).result.trim();
 
     const user = await db.query("SELECT * FROM users WHERE email = $1", [email]);
-    const user_id = user.rows[0].id
+    
 
     if (user.rowCount && bcrypt.compareSync(password, user.rows[0].password)) {
+        const user_id = user.rows[0].id
         const token = uuid();
         await db.query("INSERT INTO sessions (user_id, token) VALUES ($1, $2);", [user_id, token])
         const body = { token };
