@@ -29,7 +29,7 @@ export async function getUser(_, res) {
         const ObjectResponse = {
             id: info.rows[0].id,
 			name: info.rows[0].name,
-			visitCount: info.rows[0].visitcount,
+			visitCount: info.rows[0].visitcount !== null ? info.rows[0].visitcount : 0,
 			shortenedUrls: urls.rows,
         }
         return res.status(200).send(ObjectResponse);
