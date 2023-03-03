@@ -1,4 +1,4 @@
-import { userInfo, userUrls } from "../repositories/user.repository.js"
+import { userInfo, userUrls } from "../repositories/user.repository.js";
 
 export async function getUser(_, res) {
     const session = res.locals.session;
@@ -14,7 +14,8 @@ export async function getUser(_, res) {
 			name: info.rows[0].name,
 			visitCount: info.rows[0].visitcount !== null ? info.rows[0].visitcount : 0,
 			shortenedUrls: urls.rows,
-        }
+        };
+
         return res.status(200).send(ObjectResponse);
 
     } catch (error) {

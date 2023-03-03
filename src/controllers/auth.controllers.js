@@ -35,9 +35,9 @@ export async function loginUser(req, res) {
     const user = await uniqueUser(email);
 
     if (user.rowCount && bcrypt.compareSync(password, user.rows[0].password)) {
-        const user_id = user.rows[0].id;
+        const userId = user.rows[0].id;
         const token = uuid();
-        await insertSession(user_id, token);
+        await insertSession(userId, token);
         const body = { token };
         res.status(200).send(body);
     } else {
