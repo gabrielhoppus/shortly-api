@@ -1,10 +1,10 @@
-import { db } from "../config/database.connection.js";
 import { stripHtml } from "string-strip-html";
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
+import { insertSession, insertUser, uniqueUser } from "../repositories/auth.repository.js";
 
 export async function createUser(req, res) {
-    let { name, email, password, confirmPassword} = req.body;
+    let { name, email, password } = req.body;
 
     name = stripHtml(name).result.trim();
     email = stripHtml(email).result.trim();
@@ -12,17 +12,17 @@ export async function createUser(req, res) {
     const passwordHash = bcrypt.hashSync(password, 10);
 
     try {
-        const unique = await db.query("SELECT * FROM users WHERE email = $1", [email])
+        const unique = await uniqueUser(email);
 
         if (unique.rowCount) {
             return res.status(409).send("User already exists");
         }
 
-        await db.query("INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *;", [name, email, passwordHash]);
+        await insertUser(name, email, passwordHash);
 
-        res.status(201).send("Usuário criado com sucesso!")
+        res.status(201).send("Usuário criado com sucesso!");
     } catch (error) {
-        res.status(500).send(error.message)
+        res.status(500).send(error.message);
     }
 }
 
@@ -32,13 +32,12 @@ export async function loginUser(req, res) {
     email = stripHtml(email).result.trim();
     password = stripHtml(password).result.trim();
 
-    const user = await db.query("SELECT * FROM users WHERE email = $1", [email]);
-    
+    const user = await uniqueUser(email);
 
     if (user.rowCount && bcrypt.compareSync(password, user.rows[0].password)) {
-        const user_id = user.rows[0].id
+        const user_id = user.rows[0].id;
         const token = uuid();
-        await db.query("INSERT INTO sessions (user_id, token) VALUES ($1, $2);", [user_id, token])
+        await insertSession(user_id, token);
         const body = { token };
         res.status(200).send(body);
     } else {

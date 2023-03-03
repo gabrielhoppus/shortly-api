@@ -1,30 +1,13 @@
-import { db } from "../config/database.connection.js";
+import { userInfo, userUrls } from "../repositories/user.repository.js"
 
 export async function getUser(_, res) {
-    const session = res.locals.session
-    const userId = session.rows[0].user_id
-
+    const session = res.locals.session;
+    const userId = session.rows[0].user_id;
 
     try {
+        const urls = await userUrls(userId);
 
-        const urls = await db.query(
-            `
-            SELECT 
-            id,
-            short_url AS "shortUrl",
-            url,
-            visits as "visitCount"
-            FROM urls WHERE user_id = $1`,
-                [userId]
-        )
-
-        const info = await db.query(`
-            SELECT id, name,
-            (SELECT SUM(visits) FROM urls WHERE user_id = $1) as visitCount
-            FROM users
-            WHERE id = $1;
-        `, [userId])
-
+        const info = await userInfo(userId);
 
         const ObjectResponse = {
             id: info.rows[0].id,
@@ -37,7 +20,4 @@ export async function getUser(_, res) {
     } catch (error) {
         return res.status(500).send(error);
     }
-
-
-
 }
